@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summer Fitness Planner</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #f4f7f9;
+      --text-color: #333;
+      --card-bg: #ffffff;
+      --header-bg: #1abc9c;
+      --button-bg: #16a085;
+      --button-hover: #138d75;
+      --textarea-bg: #fefefe;
+    }
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --card-bg: #1e1e1e;
+      --header-bg: #0e6655;
+      --button-bg: #117864;
+      --button-hover: #0b5345;
+      --textarea-bg: #2c2c2c;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+    }
+    header {
+      background: var(--header-bg);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    header h1 {
+      margin: 0 0 0.5rem 0;
+    }
+    main {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--button-bg);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: var(--button-hover);
+    }
+    .routine-section, .day {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2, h3 {
+      margin-top: 0;
+    }
+    textarea {
+      width: 100%;
+      padding: 0.25rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      font-size: 1rem;
+      background: var(--textarea-bg);
+      margin-bottom: 0.75rem;
+      color: var(--text-color);
+    }
+    .routine-section ul {
+      padding-left: 1.5rem;
+    }
+    .routine-section li {
+      margin-bottom: 0.5rem;
+    }
+    .routine-section {
+      display: none;
+    }
+    .progress {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .icon {
+      margin-right: 0.5rem;
+    }
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .day-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    input[type="text"] {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .exercise-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--textarea-bg);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .exercise-item:hover {
+      background: rgba(0,0,0,0.03);
+      transform: translateY(-1px);
+    }
+
+    .exercise-checkbox {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--button-bg);
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .exercise-checkbox:checked {
+      background-color: var(--button-bg);
+      border-color: var(--button-bg);
+    }
+
+    .exercise-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .exercise-label {
+      font-size: 1rem;
+      transition: color 0.3s, text-decoration 0.3s;
+    }
+
+    .exercise-checkbox:checked + .exercise-label {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .remove-exercise-btn {
+  background: transparent;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: color 0.3s ease;
+  padding: 0 6px;
+  line-height: 1;
+  font-weight: bold;
+}
+.remove-exercise-btn:hover {
+  color: #c0392b;
+}
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Summer Fitness Planner</h1>
+    <p>Track and organize your <i class="fas fa-dumbbell"></i> Gym, <i class="fas fa-hand-fist"></i> Boxing, and <i class="fas fa-futbol"></i> Soccer routines</p>
+  </header>
+  <main>
+  <div class="button-group">
+  <button onclick="showRoutine('gym')">Show Gym Plan</button>
+  <button onclick="showRoutine('boxing')">Show Boxing Plan</button>
+  <button onclick="showRoutine('soccer')">Show Soccer Plan</button>
+  <button onclick="showWeeklySchedule()">Weekly Schedule</button> <!-- New button -->
+  <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+  <button onclick="toggleRoutineDisplay()">Hide/Show Routines</button>
+</div>
+
+
+    <div class="day-buttons">
+      <input type="text" id="new-day-input" placeholder="New Day Name" />
+      <button onclick="addDay()">Add Day</button>
+    </div>
+
+    <div id="routine-display"></div>
+    
+  </main>
+
+  <script>
+    let days = JSON.parse(localStorage.getItem('routineDays')) || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    let currentType = '';
+
+    function showRoutine(type) {
+      currentType = type;
+      const container = document.getElementById('routine-display');
+      container.innerHTML = '';
+      let totalCompleted = 0;
+
+      const topControls = document.createElement('div');
+      topControls.className = 'top-controls';
+      const progress = document.createElement('div');
+      progress.className = 'progress';
+      const resetAll = document.createElement('button');
+      resetAll.textContent = 'Reset All Days';
+      resetAll.onclick = () => resetAllDays(type);
+
+      topControls.appendChild(progress);
+      topControls.appendChild(resetAll);
+      container.appendChild(topControls);
+
+      days.forEach((day, index) => {
+        const key = `${type}-${day}`;
+        const saved = JSON.parse(localStorage.getItem(key)) || { plan: '', completed: false };
+
+        const section = document.createElement('div');
+        section.className = 'day';
+
+        section.innerHTML = `
+          <h2><i class="icon fas ${getIcon(type)}"></i>${day} - ${capitalize(type)}</h2>
+          <textarea id="${key}" rows="3">${saved.plan || ''}</textarea>
+         <div id="${key}-exercises">
+  ${Array.isArray(saved.exercises) ? saved.exercises.map((ex, idx) => `
+    <div class="exercise-item" id="${key}-ex-item-${idx}">
+      <input type="checkbox" class="exercise-checkbox" id="${key}-ex-${idx}" ${ex.done ? 'checked' : ''} onchange="toggleExercise('${key}', ${idx})">
+      <label for="${key}-ex-${idx}" class="exercise-label">${ex.text}</label>
+      <button class="remove-exercise-btn" onclick="removeExercise('${key}', ${idx})" title="Remove exercise">&times;</button>
+    </div>
+  `).join('') : ''}
+</div>
+
+          <br>
+          <button onclick="saveRoutine('${type}', '${day}')">Save</button>
+          <button onclick="markComplete('${type}', '${day}', this)">${saved.completed ? '✅ Completed' : '✔️ Mark as Completed'}</button>
+          <button onclick="resetDay('${type}', '${day}')">Reset This Day</button>
+          <button onclick="removeDay('${day}')">Remove This Day</button>
+          <button onclick="moveDayUp(${index})">⬆️ Move Up</button>
+          <button onclick="moveDayDown(${index})">⬇️ Move Down</button>
+        `;
+
+        container.appendChild(section);
+
+        if (saved.completed) totalCompleted++;
+      });
+
+      progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
+    }
+
+    function saveRoutine(type, day) {
+      const key = `${type}-${day}`;
+      const textarea = document.getElementById(key);
+      const lines = textarea.value.split('\n').map(line => line.trim()).filter(Boolean);
+      const current = JSON.parse(localStorage.getItem(key)) || { completed: false };
+
+      const exercises = lines.map(line => ({ text: line, done: false }));
+      localStorage.setItem(key, JSON.stringify({ ...current, exercises, plan: textarea.value }));
+      showRoutine(type);
+    }
+
+    function markComplete(type, day, btn) {
+      const key = `${type}-${day}`;
+      const current = JSON.parse(localStorage.getItem(key)) || {};
+      current.completed = true;
+      localStorage.setItem(key, JSON.stringify(current));
+      showRoutine(type);
+    }
+
+    function resetDay(type, day) {
+      const key = `${type}-${day}`;
+      const current = JSON.parse(localStorage.getItem(key)) || {};
+      current.completed = false;
+      localStorage.setItem(key, JSON.stringify(current));
+      showRoutine(type);
+    }
+
+    function resetAllDays(type) {
+      days.forEach(day => localStorage.removeItem(`${type}-${day}`));
+      showRoutine(type);
+    }
+
+    function removeDay(day) {
+      days = days.filter(d => d !== day);
+      localStorage.setItem('routineDays', JSON.stringify(days));
+      showRoutine(currentType);
+    }
+
+    function addDay() {
+      const newDay = document.getElementById('new-day-input').value.trim();
+      if (newDay && !days.includes(newDay)) {
+        days.push(newDay);
+        localStorage.setItem('routineDays', JSON.stringify(days));
+        document.getElementById('new-day-input').value = '';
+        showRoutine(currentType);
+      } else {
+        alert('Please enter a unique day name.');
+      }
+    }
+
+    function moveDayUp(index) {
+      if (index > 0) {
+        [days[index - 1], days[index]] = [days[index], days[index - 1]];
+        localStorage.setItem('routineDays', JSON.stringify(days));
+        showRoutine(currentType);
+      }
+    }
+
+    function moveDayDown(index) {
+      if (index < days.length - 1) {
+        [days[index], days[index + 1]] = [days[index + 1], days[index]];
+        localStorage.setItem('routineDays', JSON.stringify(days));
+        showRoutine(currentType);
+      }
+    }
+
+    function getIcon(type) {
+      if (type === 'gym') return 'fa-dumbbell';
+      if (type === 'boxing') return 'fa-hand-fist';
+      if (type === 'soccer') return 'fa-futbol';
+    }
+
+    function capitalize(text) {
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+    }
+
+    function toggleRoutineDisplay() {
+      const display = document.getElementById('routine-display');
+      display.style.display = display.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function toggleExercise(key, index) {
+      const current = JSON.parse(localStorage.getItem(key));
+      if (current && Array.isArray(current.exercises)) {
+        current.exercises[index].done = !current.exercises[index].done;
+        localStorage.setItem(key, JSON.stringify(current));
+      }
+    }
+
+    function showWeeklySchedule() {
+  if (!currentType) {
+    alert('Please select a routine type first (Gym, Boxing, or Soccer).');
+    return;
+  }
+  const container = document.getElementById('routine-display');
+  container.innerHTML = '';
+  
+  days.forEach(day => {
+    const key = `${currentType}-${day}`;
+    const saved = JSON.parse(localStorage.getItem(key)) || { exercises: [], plan: '', completed: false };
+    
+    const section = document.createElement('div');
+    section.className = 'routine-section';
+    section.style.display = 'block';  // show this section by default
+    
+    let exercisesHTML = '';
+    if (Array.isArray(saved.exercises) && saved.exercises.length) {
+      exercisesHTML = '<ul>';
+      saved.exercises.forEach(ex => {
+        exercisesHTML += `<li style="text-decoration: ${ex.done ? 'line-through' : 'none'}; opacity: ${ex.done ? 0.6 : 1};">${ex.text}</li>`;
+      });
+      exercisesHTML += '</ul>';
+    } else {
+      exercisesHTML = '<p>No exercises planned.</p>';
+    }
+    
+    section.innerHTML = `
+      <h3><i class="fas ${getIcon(currentType)}"></i> ${day} - ${capitalize(currentType)} Routine</h3>
+      ${exercisesHTML}
+      <p><strong>Completed:</strong> ${saved.completed ? '✅ Yes' : '❌ No'}</p>
+    `;
+    
+    container.appendChild(section);
+  });
+}
+
+function removeExercise(key, index) {
+  const current = JSON.parse(localStorage.getItem(key));
+  if (current && Array.isArray(current.exercises)) {
+    current.exercises.splice(index, 1);  // Remove the exercise at index
+    // Also update the plan textarea by joining remaining exercises
+    current.plan = current.exercises.map(ex => ex.text).join('\n');
+    localStorage.setItem(key, JSON.stringify(current));
+    showRoutine(currentType);
+  }
+}
+
+  </script>
+</body>
+</html>
