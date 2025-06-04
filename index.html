@@ -194,6 +194,19 @@
   color: #c0392b;
 }
 
+@media (min-width: 300px) and (max-width: 999px) {
+  .day button:nth-of-type(1), /* Save */
+  .day button:nth-of-type(2), /* Mark Completed */
+  .day button:nth-of-type(3), /* Reset This Day */
+  .day button:nth-of-type(4), /* Remove This Day */
+  .day button:nth-of-type(5), /* Move Up */
+  .day button:nth-of-type(6)  /* Move Down */ {
+    margin-bottom: 15px;
+  }
+}
+
+
+
   </style>
 </head>
 <body>
@@ -222,74 +235,97 @@
   </main>
 
   <script>
-    let days = JSON.parse(localStorage.getItem('routineDays')) || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    let currentType = '';
+   function getDays(type) {
+  return JSON.parse(localStorage.getItem(`routineDays-${type}`)) || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+}
+
+function setDays(type, days) {
+  localStorage.setItem(`routineDays-${type}`, JSON.stringify(days));
+}
 
     function showRoutine(type) {
-      currentType = type;
-      const container = document.getElementById('routine-display');
-      container.innerHTML = '';
-      let totalCompleted = 0;
+  currentType = type;
+  const container = document.getElementById('routine-display');
+  container.innerHTML = '';
 
-      const topControls = document.createElement('div');
-      topControls.className = 'top-controls';
-      const progress = document.createElement('div');
-      progress.className = 'progress';
-      const resetAll = document.createElement('button');
-      resetAll.textContent = 'Reset All Days';
-      resetAll.onclick = () => resetAllDays(type);
+  let days = getDays(type);  // <-- get days specific for this routine
 
-      topControls.appendChild(progress);
-      topControls.appendChild(resetAll);
-      container.appendChild(topControls);
+  let totalCompleted = 0;
 
-      days.forEach((day, index) => {
-        const key = `${type}-${day}`;
-        const saved = JSON.parse(localStorage.getItem(key)) || { plan: '', completed: false };
+  const topControls = document.createElement('div');
+  topControls.className = 'top-controls';
+  const progress = document.createElement('div');
+  progress.className = 'progress';
+  const resetAll = document.createElement('button');
+  resetAll.textContent = 'Reset All Days';
+  resetAll.onclick = () => resetAllDays(type);
 
-        const section = document.createElement('div');
-        section.className = 'day';
+  topControls.appendChild(progress);
+  topControls.appendChild(resetAll);
+  container.appendChild(topControls);
 
-        section.innerHTML = `
-          <h2><i class="icon fas ${getIcon(type)}"></i>${day} - ${capitalize(type)}</h2>
-          <textarea id="${key}" rows="3">${saved.plan || ''}</textarea>
-         <div id="${key}-exercises">
-  ${Array.isArray(saved.exercises) ? saved.exercises.map((ex, idx) => `
-    <div class="exercise-item" id="${key}-ex-item-${idx}">
-      <input type="checkbox" class="exercise-checkbox" id="${key}-ex-${idx}" ${ex.done ? 'checked' : ''} onchange="toggleExercise('${key}', ${idx})">
-      <label for="${key}-ex-${idx}" class="exercise-label">${ex.text}</label>
-      <button class="remove-exercise-btn" onclick="removeExercise('${key}', ${idx})" title="Remove exercise">&times;</button>
-    </div>
-  `).join('') : ''}
-</div>
+  days.forEach((day, index) => {
+    const key = `${type}-${day}`;
+    const saved = JSON.parse(localStorage.getItem(key)) || { plan: '', completed: false };
 
-          <br>
-          <button onclick="saveRoutine('${type}', '${day}')">Save</button>
-          <button onclick="markComplete('${type}', '${day}', this)">${saved.completed ? '✅ Completed' : '✔️ Mark as Completed'}</button>
-          <button onclick="resetDay('${type}', '${day}')">Reset This Day</button>
-          <button onclick="removeDay('${day}')">Remove This Day</button>
-          <button onclick="moveDayUp(${index})">⬆️ Move Up</button>
-          <button onclick="moveDayDown(${index})">⬇️ Move Down</button>
-        `;
+    const section = document.createElement('div');
+    section.className = 'day';
 
-        container.appendChild(section);
+    section.innerHTML = `
+      <h2><i class="icon fas ${getIcon(type)}"></i>${day} - ${capitalize(type)}</h2>
+      <textarea id="${key}" rows="3">${saved.plan || ''}</textarea>
+      <div id="${key}-exercises">
+        ${Array.isArray(saved.exercises) ? saved.exercises.map((ex, idx) => `
+          <div class="exercise-item" id="${key}-ex-item-${idx}">
+            <input type="checkbox" class="exercise-checkbox" id="${key}-ex-${idx}" ${ex.done ? 'checked' : ''} onchange="toggleExercise('${key}', ${idx})">
+            <label for="${key}-ex-${idx}" class="exercise-label">${ex.text}</label>
+            <button class="remove-exercise-btn" onclick="removeExercise('${key}', ${idx})" title="Remove exercise">&times;</button>
+          </div>
+        `).join('') : ''}
+      </div>
 
-        if (saved.completed) totalCompleted++;
-      });
+      <br>
+      <button onclick="saveRoutine('${type}', '${day}')">Save</button>
+      <button onclick="markComplete('${type}', '${day}', this)">${saved.completed ? '✅ Completed' : '✔️ Mark as Completed'}</button>
+      <button onclick="resetDay('${type}', '${day}')">Reset This Day</button>
+      <button onclick="removeDay('${type}', '${day}')">Remove This Day</button>
+      <button onclick="moveDayUp('${type}', ${index})">⬆️ Move Up</button>
+      <button onclick="moveDayDown('${type}', ${index})">⬇️ Move Down</button>
+    `;
 
-      progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
+    container.appendChild(section);
+
+    if (saved.completed) totalCompleted++;
+  });
+
+  progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
+}
+
+  function saveRoutine(type, day) {
+  const key = `${type}-${day}`;
+  const textarea = document.getElementById(key);
+  const lines = textarea.value.split('\n').map(line => line.trim()).filter(Boolean);
+
+  // Get current saved data
+  const current = JSON.parse(localStorage.getItem(key)) || { completed: false, exercises: [] };
+
+  // Create a Set of current exercise texts to avoid duplicates
+  const existingTexts = new Set(current.exercises.map(ex => ex.text));
+
+  // Add new exercises (preserve existing ones)
+  lines.forEach(line => {
+    if (!existingTexts.has(line)) {
+      current.exercises.push({ text: line, done: false });
     }
+  });
 
-    function saveRoutine(type, day) {
-      const key = `${type}-${day}`;
-      const textarea = document.getElementById(key);
-      const lines = textarea.value.split('\n').map(line => line.trim()).filter(Boolean);
-      const current = JSON.parse(localStorage.getItem(key)) || { completed: false };
+  // Update the saved plan text
+  current.plan = textarea.value;
 
-      const exercises = lines.map(line => ({ text: line, done: false }));
-      localStorage.setItem(key, JSON.stringify({ ...current, exercises, plan: textarea.value }));
-      showRoutine(type);
-    }
+  localStorage.setItem(key, JSON.stringify(current));
+  showRoutine(type);
+}
+
 
     function markComplete(type, day, btn) {
       const key = `${type}-${day}`;
@@ -312,39 +348,56 @@
       showRoutine(type);
     }
 
-    function removeDay(day) {
-      days = days.filter(d => d !== day);
-      localStorage.setItem('routineDays', JSON.stringify(days));
-      showRoutine(currentType);
-    }
+    function removeDay(type, day) {
+  let days = getDays(type);
+  days = days.filter(d => d !== day);
+  setDays(type, days);
+  showRoutine(type);
+}
 
-    function addDay() {
-      const newDay = document.getElementById('new-day-input').value.trim();
-      if (newDay && !days.includes(newDay)) {
-        days.push(newDay);
-        localStorage.setItem('routineDays', JSON.stringify(days));
-        document.getElementById('new-day-input').value = '';
-        showRoutine(currentType);
-      } else {
-        alert('Please enter a unique day name.');
-      }
-    }
 
-    function moveDayUp(index) {
-      if (index > 0) {
-        [days[index - 1], days[index]] = [days[index], days[index - 1]];
-        localStorage.setItem('routineDays', JSON.stringify(days));
-        showRoutine(currentType);
-      }
-    }
+  function addDay() {
+  if (!currentType) {
+    alert('Please select a routine type first (Gym, Boxing, or Soccer).');
+    return;
+  }
 
-    function moveDayDown(index) {
-      if (index < days.length - 1) {
-        [days[index], days[index + 1]] = [days[index + 1], days[index]];
-        localStorage.setItem('routineDays', JSON.stringify(days));
-        showRoutine(currentType);
-      }
-    }
+  const newDay = document.getElementById('new-day-input').value.trim();
+  if (!newDay) {
+    alert('Please enter a day name.');
+    return;
+  }
+
+  let days = getDays(currentType);
+  if (days.includes(newDay)) {
+    alert('Please enter a unique day name.');
+    return;
+  }
+
+  days.push(newDay);
+  setDays(currentType, days);
+  document.getElementById('new-day-input').value = '';
+  showRoutine(currentType);
+}
+
+
+   function moveDayUp(type, index) {
+  let days = getDays(type);
+  if (index > 0) {
+    [days[index - 1], days[index]] = [days[index], days[index - 1]];
+    setDays(type, days);
+    showRoutine(type);
+  }
+}
+
+function moveDayDown(type, index) {
+  let days = getDays(type);
+  if (index < days.length - 1) {
+    [days[index], days[index + 1]] = [days[index + 1], days[index]];
+    setDays(type, days);
+    showRoutine(type);
+  }
+}
 
     function getIcon(type) {
       if (type === 'gym') return 'fa-dumbbell';
@@ -372,23 +425,33 @@
         localStorage.setItem(key, JSON.stringify(current));
       }
     }
-
-    function showWeeklySchedule() {
+function showWeeklySchedule() {
   if (!currentType) {
     alert('Please select a routine type first (Gym, Boxing, or Soccer).');
     return;
   }
+
   const container = document.getElementById('routine-display');
-  container.innerHTML = '';
-  
+  container.innerHTML = '';  // Clear current display
+
+  const days = getDays(currentType);
+
+  if (days.length === 0) {
+    container.innerHTML = '<p>No days added to this routine yet.</p>';
+    return;
+  }
+
   days.forEach(day => {
     const key = `${currentType}-${day}`;
     const saved = JSON.parse(localStorage.getItem(key)) || { exercises: [], plan: '', completed: false };
-    
+    const notesKey = `${key}-notes`; // key for notes
+    const savedNotes = localStorage.getItem(notesKey) || '';
+
     const section = document.createElement('div');
     section.className = 'routine-section';
-    section.style.display = 'block';  // show this section by default
-    
+    section.style.display = 'block';
+
+    // Exercises HTML
     let exercisesHTML = '';
     if (Array.isArray(saved.exercises) && saved.exercises.length) {
       exercisesHTML = '<ul>';
@@ -399,16 +462,25 @@
     } else {
       exercisesHTML = '<p>No exercises planned.</p>';
     }
-    
+
     section.innerHTML = `
       <h3><i class="fas ${getIcon(currentType)}"></i> ${day} - ${capitalize(currentType)} Routine</h3>
+      <h4>Exercises:</h4>
       ${exercisesHTML}
       <p><strong>Completed:</strong> ${saved.completed ? '✅ Yes' : '❌ No'}</p>
+      <h4>Notes:</h4>
+      <textarea rows="3" style="margin-bottom: 0.5rem;" id="${notesKey}">${savedNotes}</textarea>
+      <br>
+      <button onclick="saveNotes('${notesKey}')">Save Notes</button>
+      <hr>
     `;
-    
+
     container.appendChild(section);
   });
 }
+
+
+
 
 function removeExercise(key, index) {
   const current = JSON.parse(localStorage.getItem(key));
@@ -420,6 +492,13 @@ function removeExercise(key, index) {
     showRoutine(currentType);
   }
 }
+
+function saveNotes(key) {
+  const notesText = document.getElementById(key).value;
+  localStorage.setItem(key, notesText);
+  alert('Notes saved!');
+}
+
 
   </script>
 </body>
