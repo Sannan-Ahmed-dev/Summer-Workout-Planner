@@ -410,8 +410,10 @@ function moveDayDown(type, index) {
     }
 
     function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-    }
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkModeEnabled', isDark);
+}
+
 
     function toggleRoutineDisplay() {
       const display = document.getElementById('routine-display');
@@ -498,6 +500,14 @@ function saveNotes(key) {
   localStorage.setItem(key, notesText);
   alert('Notes saved!');
 }
+
+// Apply dark mode on initial load if saved in localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('darkModeEnabled') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+});
+
 
 
   </script>
