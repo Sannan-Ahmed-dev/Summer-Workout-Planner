@@ -205,6 +205,27 @@
   }
 }
 
+#circle-timer {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: auto;
+  }
+  #circle-timer svg {
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+  }
+  #timer-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-color);
+  }
+
 
 
   </style>
@@ -219,6 +240,7 @@
   <button onclick="showRoutine('gym')">Show Gym Plan</button>
   <button onclick="showRoutine('boxing')">Show Boxing Plan</button>
   <button onclick="showRoutine('soccer')">Show Soccer Plan</button>
+  <button onclick="showRoutine('timer')">Timer</button>
   <button onclick="showWeeklySchedule()">Weekly Schedule</button> <!-- New button -->
   <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
   <button onclick="toggleRoutineDisplay()">Hide/Show Routines</button>
@@ -231,6 +253,22 @@
     </div>
 
     <div id="routine-display"></div>
+
+    <div id="timer-section" style="display:none; text-align: center;">
+  <h2><i class="fas fa-stopwatch"></i> Editable Animated Timer</h2>
+  <div id="circle-timer">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" stroke="#ddd" stroke-width="10" fill="none" />
+      <circle id="progress-ring" cx="50" cy="50" r="45" stroke="#1abc9c" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="282.6" stroke-dashoffset="282.6" />
+    </svg>
+    <div id="timer-text">00:30</div>
+  </div>
+  <br>
+  <input type="number" id="time-input" min="1" max="99999" placeholder="Enter seconds" style="padding: 0.5rem; border-radius: 8px; width: 150px;">
+  <br><br>
+  <button onclick="startTimer()">Start</button>
+  <button onclick="resetTimer()">Reset</button>
+</div>
     
   </main>
 
@@ -260,6 +298,11 @@ function setDays(type, days) {
   resetAll.textContent = 'Reset All Days';
   resetAll.onclick = () => resetAllDays(type);
 
+    const section = document.getElementById('timer-section');
+    section.style.display = type === 'timer' ? 'block' : 'none';
+    if (type !== 'timer') document.getElementById('routine-display').style.display = 'block';
+    else document.getElementById('routine-display').style.display = 'none';
+
   topControls.appendChild(progress);
   topControls.appendChild(resetAll);
   container.appendChild(topControls);
@@ -270,6 +313,8 @@ function setDays(type, days) {
 
     const section = document.createElement('div');
     section.className = 'day';
+
+    
 
     section.innerHTML = `
       <h2><i class="icon fas ${getIcon(type)}"></i>${day} - ${capitalize(type)}</h2>
@@ -296,6 +341,7 @@ function setDays(type, days) {
     container.appendChild(section);
 
     if (saved.completed) totalCompleted++;
+    
   });
 
   progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
@@ -508,6 +554,48 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+ let timerDuration = 30;
+  let timerInterval;
+  let remainingTime = timerDuration;
+
+
+  function startTimer() {
+    const input = document.getElementById('time-input');
+    timerDuration = parseInt(input.value) || 30;
+    remainingTime = timerDuration;
+    const ring = document.getElementById('progress-ring');
+    const circleLength = 2 * Math.PI * 45;
+    ring.style.transition = 'none';
+    ring.style.strokeDashoffset = circleLength;
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      remainingTime--;
+      const progress = (remainingTime / timerDuration) * circleLength;
+      ring.style.strokeDashoffset = progress;
+      document.getElementById('timer-text').textContent = formatTime(remainingTime);
+
+      if (remainingTime <= 0) {
+        clearInterval(timerInterval);
+        ring.style.strokeDashoffset = 0;
+      }
+    }, 1000);
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    const ring = document.getElementById('progress-ring');
+    const circleLength = 2 * Math.PI * 45;
+    ring.style.strokeDashoffset = circleLength;
+    document.getElementById('timer-text').textContent = formatTime(timerDuration);
+  }
+
+  function formatTime(seconds) {
+    const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+    const s = String(seconds % 60).padStart(2, '0');
+    return `${m}:${s}`;
+  }
 
 
   </script>
