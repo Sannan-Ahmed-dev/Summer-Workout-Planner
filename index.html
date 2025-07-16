@@ -225,6 +225,203 @@
     font-weight: bold;
     color: var(--text-color);
   }
+#nutrition-section {
+  max-width: 400px;    /* smaller max width */
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+  font-size: 1.1rem;
+  color: var(--text-color);
+  box-sizing: border-box;  /* important to include padding in width */
+}
+
+#nutrition-section * {
+  box-sizing: border-box; /* prevent overflow inside */
+}
+
+#nutrition-section input[type="text"],
+#nutrition-section select,
+#nutrition-section button {
+  width: 100%;  /* full width inside container */
+  max-width: 100%;  /* prevent overflow */
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border: 2px solid var(--button-bg);
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  transition: border-color 0.3s ease;
+}
+
+#meal-log-section {
+  max-width: 60rem;
+  margin: 2rem auto;
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text-color);
+}
+
+#meal-log-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: white;
+}
+
+#meal-name-input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid #000000;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-sizing: border-box;
+   background-color: var(--textarea-bg); /* uses your theme bg color */
+  color: var(--text-color);
+  transition: border-color 0.3s ease;
+}
+
+#meal-name-input:focus {
+  outline: none;
+  border-color: var(--button-hover);
+  box-shadow: 0 0 8px var(--button-hover);
+}
+
+#meal-log-section button {
+  display: block;
+  width: 100%;
+  background: var(--button-bg);
+  border: none;
+  color: white;
+  padding: 0.75rem 0;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+#meal-log-section button:hover {
+  background: var(--button-hover);
+}
+
+.meal-card {
+  background: var(--card-bg);
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.meal-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.meal-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  color: white;
+  font-size: 1.3rem;
+}
+
+.meal-card label {
+  display: block;
+  margin-bottom: 0.6rem;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 1rem;
+}
+
+
+.meal-card input.meal-input {
+  width: 100%;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  border: 1.8px solid #000000;
+  border-radius: 8px;
+  background-color: var(--textarea-bg); /* uses your theme bg color */
+  color: var(--text-color);
+  box-sizing: border-box;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.meal-card input.meal-input:focus {
+  outline: none;
+  border-color: var(--button-bg);
+  box-shadow: 0 0 8px var(--button-bg);
+  background-color: var(--card-bg); /* slight highlight on focus */
+}
+
+.meal-card button {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.meal-card button:hover {
+  background: #c0392b;
+}
+
+#meal-card-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 1rem; /* space between cards */
+  width: 100%;
+}
+
+.meal-card {
+  background: var(--card-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  /* optional: set a max-width or min-width if you want */
+}
+
+
+@media (max-width: 999px) and (min-width: 350px) {
+  #meal-card-container {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+
+  .meal-card {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  #nutrition-section,
+  #meal-log-section {
+    max-width: 95%;
+    padding: 1rem;
+  }
+
+  #meal-name-input,
+  #meal-log-section button,
+  .meal-card input.meal-input {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .meal-card h3 {
+    font-size: 1.2rem;
+  }
+}
+
 
 
 
@@ -241,10 +438,27 @@
   <button onclick="showRoutine('boxing')">Show Boxing Plan</button>
   <button onclick="showRoutine('soccer')">Show Soccer Plan</button>
   <button onclick="showRoutine('timer')">Timer</button>
+  <button onclick="showRoutine('tracker')">Macro Tracker</button>
+  <button onclick="showRoutine('meal')">Meal Log</button>
   <button onclick="showWeeklySchedule()">Weekly Schedule</button> <!-- New button -->
   <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
   <button onclick="toggleRoutineDisplay()">Hide/Show Routines</button>
 </div>
+<div id="nutrition-section" style="display:none; margin-top: 2rem;">
+  <h2><i class="fas fa-apple-alt"></i> Nutrition Tracker</h2>
+
+  <select id="type-select">
+    <option value="food">Food</option>
+    <option value="sauce">Sauce</option>
+    <option value="drink">Drink</option>
+  </select>
+  <input type="text" id="ingredient-input" placeholder="e.g. 2 eggs, 1 slice of bread">
+  <br><br>
+  <button onclick="fetchNutritionData()">Analyze</button>
+  <div id="nutrition-output" style="margin-top: 1rem;"></div>
+</div>
+
+
 
 
     <div class="day-buttons">
@@ -270,7 +484,17 @@
   <button onclick="resetTimer()">Reset</button>
 </div>
     
-  </main>
+
+<div id="meal-log-section" style="display:none;">
+    <h2><i class="fas fa-utensils"></i> Custom Meal Tracker</h2>
+    <input type="text" id="meal-name-input" placeholder="Enter meal name (e.g., Breakfast)">
+    <button onclick="addMealCard()">Add Meal</button>
+    <div id="meal-card-container"></div>
+    
+  </div>
+  
+
+</main>
 
   <script>
    function getDays(type) {
@@ -281,12 +505,12 @@ function setDays(type, days) {
   localStorage.setItem(`routineDays-${type}`, JSON.stringify(days));
 }
 
-    function showRoutine(type) {
+ function showRoutine(type) {
   currentType = type;
   const container = document.getElementById('routine-display');
   container.innerHTML = '';
 
-  let days = getDays(type);  // <-- get days specific for this routine
+  let days = getDays(type);
 
   let totalCompleted = 0;
 
@@ -298,14 +522,30 @@ function setDays(type, days) {
   resetAll.textContent = 'Reset All Days';
   resetAll.onclick = () => resetAllDays(type);
 
-    const section = document.getElementById('timer-section');
-    section.style.display = type === 'timer' ? 'block' : 'none';
-    if (type !== 'timer') document.getElementById('routine-display').style.display = 'block';
-    else document.getElementById('routine-display').style.display = 'none';
+  const section = document.getElementById('timer-section');
+  section.style.display = type === 'timer' ? 'block' : 'none';
 
-  topControls.appendChild(progress);
-  topControls.appendChild(resetAll);
-  container.appendChild(topControls);
+  document.getElementById('nutrition-section').style.display = type === 'tracker' ? 'block' : 'none';
+
+  const addDayInput = document.getElementById('new-day-input');
+  const addDayBtn = addDayInput.nextElementSibling;
+
+  if (type === 'tracker') {
+    container.style.display = 'none';
+    section.style.display = 'none';
+    addDayInput.style.display = 'none';
+    addDayBtn.style.display = 'none';
+  } else {
+    container.style.display = 'block';
+    addDayInput.style.display = 'inline-block';
+    addDayBtn.style.display = 'inline-block';
+  }
+
+  if (type !== 'tracker') {
+    topControls.appendChild(progress);
+    topControls.appendChild(resetAll);
+    container.appendChild(topControls);
+  }
 
   days.forEach((day, index) => {
     const key = `${type}-${day}`;
@@ -313,8 +553,6 @@ function setDays(type, days) {
 
     const section = document.createElement('div');
     section.className = 'day';
-
-    
 
     section.innerHTML = `
       <h2><i class="icon fas ${getIcon(type)}"></i>${day} - ${capitalize(type)}</h2>
@@ -341,11 +579,26 @@ function setDays(type, days) {
     container.appendChild(section);
 
     if (saved.completed) totalCompleted++;
-    
   });
 
-  progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
+  if (type !== 'tracker') {
+    progress.innerHTML = `<i class="fas fa-chart-line"></i> Progress: ${totalCompleted}/${days.length} Days Completed`;
+  }
+
+
+  const dayButtons = document.querySelector('.day-buttons');
+  if (type === 'timer' || type === 'tracker' || type === 'meal') {
+    dayButtons.style.display = 'none';
+    container.style.display = 'none';  // <-- Hide routine days/cards here for timer and meal
+  } else {
+    dayButtons.style.display = 'flex';  // default display for your day buttons container
+    container.style.display = 'block';  // show routine days/cards for gym, boxing, soccer
+  }
+
+document.getElementById('meal-log-section').style.display = type === 'meal' ? 'block' : 'none';
+
 }
+
 
   function saveRoutine(type, day) {
   const key = `${type}-${day}`;
@@ -527,7 +780,84 @@ function showWeeklySchedule() {
   });
 }
 
+function addMealCard() {
+    const name = document.getElementById('meal-name-input').value.trim();
+    if (!name) return alert('Enter a name');
 
+    const container = document.getElementById('meal-card-container');
+    const card = document.createElement('div');
+    card.className = 'meal-card';
+    card.innerHTML = `
+      <h3>${name}</h3>
+        <label>Calories: <input type="text" class="meal-input" data-unit=" kcal" placeholder="kcal"></label><br>
+    <label>Protein: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
+    <label>Carbs: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
+    <label>Fat: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
+    <label>Sodium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg"></label><br>
+    <label>Potassium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg"></label><br>
+      <button onclick="this.parentElement.remove()">Remove Meal</button>
+    `;
+
+    
+    
+    container.appendChild(card);
+    document.getElementById('meal-name-input').value = '';
+
+  // Add event listeners for unit formatting
+const inputs = card.querySelectorAll('.meal-input');
+inputs.forEach(input => {
+  input.addEventListener('input', () => {
+    let unit = input.dataset.unit;
+    let val = input.value;
+
+    // Remove previous unit from input
+    if (val.endsWith(unit)) {
+      val = val.slice(0, -unit.length);
+    }
+
+    // Allow only numbers and dot
+    val = val.replace(/[^\d.]/g, '');
+
+    // Save current cursor position relative to number only
+    let cursorPos = input.selectionStart;
+    // Calculate position without unit
+    let numLength = val.length;
+
+    // Update input with number + unit
+    input.value = val + unit;
+
+    // Reset cursor position before the unit
+    if (cursorPos > numLength) {
+      cursorPos = numLength;
+    }
+
+    input.setSelectionRange(cursorPos, cursorPos);
+  });
+
+  // Optional: remove unit on focus for easier editing
+  input.addEventListener('focus', () => {
+    let unit = input.dataset.unit;
+    if (input.value.endsWith(unit)) {
+      input.value = input.value.slice(0, -unit.length);
+    }
+  });
+
+  // Add unit back on blur if value exists
+  input.addEventListener('blur', () => {
+    let unit = input.dataset.unit;
+    if (input.value && !input.value.endsWith(unit)) {
+      input.value += unit;
+    }
+  });
+});
+
+  
+
+  
+}
+
+    
+  
 
 
 function removeExercise(key, index) {
@@ -596,6 +926,82 @@ window.addEventListener('DOMContentLoaded', () => {
     const s = String(seconds % 60).padStart(2, '0');
     return `${m}:${s}`;
   }
+
+
+
+
+const NUTRITIONIX_APP_ID = '767c62c7';
+const NUTRITIONIX_API_KEY = '10257f3f5dab309b98ed4b9a6dc83f62';
+async function fetchNutritionData() {
+  const input = document.getElementById('ingredient-input').value.trim();
+  if (!input) return alert("Please enter ingredients separated by commas, e.g. '2 eggs, 1 banana'");
+
+  // Split input by commas and trim spaces
+  const ingredients = input.split(',').map(i => i.trim()).filter(Boolean);
+  if (ingredients.length === 0) {
+    document.getElementById('nutrition-output').innerHTML = "No valid ingredients entered.";
+    return;
+  }
+
+  // Initialize totals
+  const totals = {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    sodium: 0,
+    potassium: 0,
+  };
+
+  // Loop over ingredients, fetch data for each, and sum up
+  for (const ingredient of ingredients) {
+    const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients';
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-app-id': NUTRITIONIX_APP_ID,
+          'x-app-key': NUTRITIONIX_API_KEY
+        },
+        body: JSON.stringify({ query: ingredient })
+      });
+
+      const data = await res.json();
+
+      if (!data.foods || data.foods.length === 0) {
+        // Optionally show warning for this ingredient or skip silently
+        continue;
+      }
+
+      const food = data.foods[0];
+      totals.calories += food.nf_calories || 0;
+      totals.protein += food.nf_protein || 0;
+      totals.carbs += food.nf_total_carbohydrate || 0;
+      totals.fat += food.nf_total_fat || 0;
+      totals.sodium += food.nf_sodium || 0;
+      totals.potassium += food.nf_potassium || 0;
+
+    } catch (e) {
+      console.error(`Error fetching nutrition for "${ingredient}":`, e);
+      // You can optionally alert the user or continue silently
+    }
+  }
+
+  // Display the summed totals
+  document.getElementById('nutrition-output').innerHTML = `
+    <p><strong>Total Nutrition:</strong></p>
+    <p>Calories: ${totals.calories.toFixed(2)} kcal</p>
+    <p>Protein: ${totals.protein.toFixed(2)} g</p>
+    <p>Carbs: ${totals.carbs.toFixed(2)} g</p>
+    <p>Fat: ${totals.fat.toFixed(2)} g</p>
+    <p>Sodium: ${totals.sodium.toFixed(2)} mg</p>
+    <p>Potassium: ${totals.potassium > 0 ? totals.potassium.toFixed(2) : 'N/A'} mg</p>
+  `;
+}
+
+
 
 
   </script>
