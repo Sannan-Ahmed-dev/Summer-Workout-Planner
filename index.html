@@ -814,6 +814,7 @@ function addMealCard(name, savedData = null) {
     <label>Sodium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg" value="${sodium}"></label><br>
     <label>Potassium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg" value="${potassium}"></label><br>
     <button class="remove-meal-btn">Remove Meal</button>
+    <button class="reset-meal-btn">Reset Meal</button>
   `;
 
   container.appendChild(card);
@@ -850,6 +851,16 @@ function addMealCard(name, savedData = null) {
     card.remove();
     saveMealsToStorage();
   });
+
+  
+// Reset meal button listener
+card.querySelector('.reset-meal-btn').addEventListener('click', () => {
+  const inputs = card.querySelectorAll('.meal-input');
+  inputs.forEach(input => {
+    input.value = ''; // Clear the value
+  });
+  saveMealsToStorage();
+});
 
   // Save whenever a meal is added
   if (!savedData) saveMealsToStorage();
