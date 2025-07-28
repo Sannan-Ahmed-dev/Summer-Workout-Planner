@@ -400,8 +400,8 @@
   }
 
   .meal-card {
-    width: 100%;
-    font-size: 1rem;
+        width: 90%;
+        font-size: 1rem;
   }
 
   #nutrition-section,
@@ -488,7 +488,7 @@
 <div id="meal-log-section" style="display:none;">
     <h2><i class="fas fa-utensils"></i> Custom Meal Tracker</h2>
     <input type="text" id="meal-name-input" placeholder="Enter meal name (e.g., Breakfast)">
-    <button onclick="addMealCard()">Add Meal</button>
+    <button onclick="handleAddMealClick()">Add Meal</button>
     <div id="meal-card-container"></div>
     
   </div>
@@ -780,80 +780,143 @@ function showWeeklySchedule() {
   });
 }
 
-function addMealCard() {
-    const name = document.getElementById('meal-name-input').value.trim();
-    if (!name) return alert('Enter a name');
 
-    const container = document.getElementById('meal-card-container');
-    const card = document.createElement('div');
-    card.className = 'meal-card';
-    card.innerHTML = `
-      <h3>${name}</h3>
-        <label>Calories: <input type="text" class="meal-input" data-unit=" kcal" placeholder="kcal"></label><br>
-    <label>Protein: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
-    <label>Carbs: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
-    <label>Fat: <input type="text" class="meal-input" data-unit=" g" placeholder="g"></label><br>
-    <label>Sodium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg"></label><br>
-    <label>Potassium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg"></label><br>
-      <button onclick="this.parentElement.remove()">Remove Meal</button>
-    `;
-
-    
-    
-    container.appendChild(card);
-    document.getElementById('meal-name-input').value = '';
-
-  // Add event listeners for unit formatting
-const inputs = card.querySelectorAll('.meal-input');
-inputs.forEach(input => {
-  input.addEventListener('input', () => {
-    let unit = input.dataset.unit;
-    let val = input.value;
-
-    // Remove previous unit from input
-    if (val.endsWith(unit)) {
-      val = val.slice(0, -unit.length);
-    }
-
-    // Allow only numbers and dot
-    val = val.replace(/[^\d.]/g, '');
-
-    // Save current cursor position relative to number only
-    let cursorPos = input.selectionStart;
-    // Calculate position without unit
-    let numLength = val.length;
-
-    // Update input with number + unit
-    input.value = val + unit;
-
-    // Reset cursor position before the unit
-    if (cursorPos > numLength) {
-      cursorPos = numLength;
-    }
-
-    input.setSelectionRange(cursorPos, cursorPos);
-  });
-
-  // Optional: remove unit on focus for easier editing
-  input.addEventListener('focus', () => {
-    let unit = input.dataset.unit;
-    if (input.value.endsWith(unit)) {
-      input.value = input.value.slice(0, -unit.length);
-    }
-  });
-
-  // Add unit back on blur if value exists
-  input.addEventListener('blur', () => {
-    let unit = input.dataset.unit;
-    if (input.value && !input.value.endsWith(unit)) {
-      input.value += unit;
-    }
-  });
+// Load saved meals from localStorage on page load
+window.addEventListener('DOMContentLoaded', () => {
+  loadMealsFromStorage();
 });
 
-  
 
-  
+
+// Add meal card (called when user clicks "Add Meal")
+function addMealCard(name, savedData = null) {
+  if (!name) return alert('Enter a name');
+
+  const container = document.getElementById('meal-card-container');
+  const card = document.createElement('div');
+  card.className = 'meal-card';
+
+  // Use savedData or empty strings for inputs
+  const calories = savedData?.calories || '';
+  const protein = savedData?.protein || '';
+  const carbs = savedData?.carbs || '';
+  const fat = savedData?.fat || '';
+  const sodium = savedData?.sodium || '';
+  const potassium = savedData?.potassium || '';
+
+  card.innerHTML = `
+    <h3>${name}</h3>
+    <label>Calories: <input type="text" class="meal-input" data-unit=" kcal" placeholder="kcal" value="${calories}"></label><br>
+    <label>Protein: <input type="text" class="meal-input" data-unit=" g" placeholder="g" value="${protein}"></label><br>
+    <label>Carbs: <input type="text" class="meal-input" data-unit=" g" placeholder="g" value="${carbs}"></label><br>
+    <label>Fat: <input type="text" class="meal-input" data-unit=" g" placeholder="g" value="${fat}"></label><br>
+    <label>Sodium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg" value="${sodium}"></label><br>
+    <label>Potassium: <input type="text" class="meal-input" data-unit=" mg" placeholder="mg" value="${potassium}"></label><br>
+    <button class="remove-meal-btn">Remove Meal</button>
+  `;
+
+  container.appendChild(card);
+
+  // Clear the input for meal name if called from UI
+  if (!savedData) document.getElementById('meal-name-input').value = '';
+
+  // Add event listeners for unit formatting and saving changes
+  const inputs = card.querySelectorAll('.meal-input');
+  inputs.forEach(input => {
+    input.addEventListener('input', () => {
+      formatInputWithUnit(input);
+      saveMealsToStorage();
+    });
+    input.addEventListener('focus', () => {
+      let unit = input.dataset.unit;
+      if (input.value.endsWith(unit)) {
+        input.value = input.value.slice(0, -unit.length);
+      }
+    });
+    input.addEventListener('blur', () => {
+      let unit = input.dataset.unit;
+      if (input.value && !input.value.endsWith(unit)) {
+        input.value += unit;
+      }
+    });
+
+    // Initialize formatting on load
+    formatInputWithUnit(input);
+  });
+
+  // Remove meal button listener
+  card.querySelector('.remove-meal-btn').addEventListener('click', () => {
+    card.remove();
+    saveMealsToStorage();
+  });
+
+  // Save whenever a meal is added
+  if (!savedData) saveMealsToStorage();
+}
+
+function handleAddMealClick() {
+  const nameInput = document.getElementById('meal-name-input');
+  const mealName = nameInput.value.trim();
+  addMealCard(mealName);
+}
+
+
+// Helper: format input with unit suffix but allow editing numbers
+function formatInputWithUnit(input) {
+  let unit = input.dataset.unit;
+  let val = input.value;
+
+  // Remove previous unit
+  if (val.endsWith(unit)) val = val.slice(0, -unit.length);
+
+  // Allow only numbers and dot
+  val = val.replace(/[^\d.]/g, '');
+
+  let cursorPos = input.selectionStart;
+  let numLength = val.length;
+
+  input.value = val + unit;
+
+  if (cursorPos > numLength) cursorPos = numLength;
+
+  input.setSelectionRange(cursorPos, cursorPos);
+}
+
+// Save all meals data to localStorage
+function saveMealsToStorage() {
+  const container = document.getElementById('meal-card-container');
+  const meals = [];
+
+  container.querySelectorAll('.meal-card').forEach(card => {
+    const name = card.querySelector('h3').textContent;
+    const inputs = card.querySelectorAll('.meal-input');
+
+    const data = {
+      calories: cleanValue(inputs[0].value),
+      protein: cleanValue(inputs[1].value),
+      carbs: cleanValue(inputs[2].value),
+      fat: cleanValue(inputs[3].value),
+      sodium: cleanValue(inputs[4].value),
+      potassium: cleanValue(inputs[5].value),
+    };
+
+    meals.push({ name, ...data });
+  });
+
+  localStorage.setItem('savedMeals', JSON.stringify(meals));
+}
+
+// Load meals from localStorage and recreate cards
+function loadMealsFromStorage() {
+  const savedMeals = JSON.parse(localStorage.getItem('savedMeals')) || [];
+  savedMeals.forEach(meal => {
+    addMealCard(meal.name, meal);
+  });
+}
+
+// Remove unit from stored values (e.g. "120 kcal" -> "120")
+function cleanValue(val) {
+  return val.replace(/[^\d.]/g, '') || '';
 }
 
     
@@ -1000,9 +1063,6 @@ async function fetchNutritionData() {
     <p>Potassium: ${totals.potassium > 0 ? totals.potassium.toFixed(2) : 'N/A'} mg</p>
   `;
 }
-
-
-
 
   </script>
 </body>
